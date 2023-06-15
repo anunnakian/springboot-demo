@@ -17,12 +17,12 @@ public class Account {
     private List<AccountStatement> statements = new ArrayList<>();
 
     public void deposit(BigDecimal amount) {
-        balance = balance.add(amount);
-
         AccountStatement statement = new AccountStatement();
         statement.setDate(ZonedDateTime.now());
         statement.setAmount(amount);
         statement.setBalance(balance);
+
+        balance = balance.add(amount);
 
         statements.add(statement);
     }

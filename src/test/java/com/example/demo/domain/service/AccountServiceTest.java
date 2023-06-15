@@ -45,7 +45,7 @@ public class AccountServiceTest {
         assertThat(captor.getValue().getIban(), CoreMatchers.equalTo(IBAN));
         assertThat(captor.getValue().getBalance(), CoreMatchers.equalTo(BigDecimal.valueOf(60.50)));
         assertNotNull(captor.getValue().getStatements().get(0).getDate());
-        assertThat(captor.getValue().getStatements().get(0).getBalance(), equalTo(BigDecimal.valueOf(60.50)));
+        assertThat(captor.getValue().getStatements().get(0).getBalance(), equalTo(BigDecimal.valueOf(30)));
         assertThat(captor.getValue().getStatements().get(0).getAmount(), equalTo(BigDecimal.valueOf(30.50)));
     }
 }
