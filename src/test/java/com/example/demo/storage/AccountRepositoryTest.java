@@ -16,14 +16,6 @@ public class AccountRepositoryTest {
 
     private AccountRepository accountRepository = new AccountRepository();
 
-    @BeforeEach
-    void setup() {
-        Account account = new Account();
-        account.setIban("FR123");
-        account.setBalance(BigDecimal.ZERO);
-        accountRepository.addAccount(account);
-    }
-
     @Test
     void shouldReturnAccount() {
         Optional<Account> account = accountRepository.findAccount("FR123");

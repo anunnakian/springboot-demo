@@ -15,7 +15,7 @@ public class AccountService {
 
     private StoragePort storagePort;
 
-    public void deposit(String iban, BigDecimal amount) {
+    public Account deposit(String iban, BigDecimal amount) {
         Optional<Account> accountOptional = storagePort.findAccount(iban);
         if (accountOptional.isEmpty()) {
             throw new AccountNotFoundException();
@@ -25,5 +25,7 @@ public class AccountService {
         account.deposit(amount);
 
         storagePort.saveAccount(account);
+
+        return account;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demo.api;
 
+import com.example.demo.domain.AccountService;
 import com.example.demo.domain.model.Account;
 import com.example.demo.domain.port.StoragePort;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,6 +27,8 @@ public class AccountResourceTest {
 
     @MockBean
     private StoragePort storagePort;
+    @MockBean
+    private AccountService accountService;
 
     @Test
     public void shouldGetAccount() throws Exception {
@@ -34,6 +38,20 @@ public class AccountResourceTest {
         when(storagePort.findAccount("FR123")).thenReturn(Optional.of(account));
 
         this.mockMvc.perform(get("/api/v1/account/FR123"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content()
+                        .string(containsString("{\"iban\":\"FR123\",\"balance\":30,\"statements\":[]}")));
+    }
+
+    @Test
+    public void shouldDeposit() throws Exception {
+        Account account = new Account();
+        account.setIban("FR123");
+        account.setBalance(BigDecimal.valueOf(30));
+        when(accountService.deposit("FR123", BigDecimal.valueOf(30.5))).thenReturn(account);
+
+        this.mockMvc.perform(post("/api/v1/account/FR123?amount=30.5"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content()
