@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 @Data
 public class AccountStatement {
 
+    private Operation operation;
     private ZonedDateTime date;
     private BigDecimal amount;
     private BigDecimal balance;

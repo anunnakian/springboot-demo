@@ -1,8 +1,6 @@
 package com.example.demo.domain.model;
 
-import lombok.Builder;
 import lombok.Data;
-import lombok.Singular;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -21,6 +19,7 @@ public class Account {
         statement.setDate(ZonedDateTime.now());
         statement.setAmount(amount);
         statement.setBalance(balance);
+        statement.setOperation(Operation.DEPOSIT);
 
         balance = balance.add(amount);
 

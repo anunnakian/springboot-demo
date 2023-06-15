@@ -2,17 +2,15 @@ package com.example.demo.domain.service;
 
 import com.example.demo.domain.AccountService;
 import com.example.demo.domain.model.Account;
+import com.example.demo.domain.model.Operation;
 import com.example.demo.domain.port.StoragePort;
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -47,5 +45,24 @@ public class AccountServiceTest {
         assertNotNull(captor.getValue().getStatements().get(0).getDate());
         assertThat(captor.getValue().getStatements().get(0).getBalance(), equalTo(BigDecimal.valueOf(30)));
         assertThat(captor.getValue().getStatements().get(0).getAmount(), equalTo(BigDecimal.valueOf(30.50)));
+    }
+
+    @Test
+    void shouldWithdrawAnAmount() {
+        Account account = new Account();
+        account.setBalance(BigDecimal.valueOf(30));
+        account.setIban(IBAN);
+        when(storagePort.findAccount(IBAN)).thenReturn(Optional.of(account));
+
+        accountService.withdraw(IBAN, BigDecimal.valueOf(10.5));
+
+        ArgumentCaptor<Account> captor = ArgumentCaptor.forClass(Account.class);
+        verify(storagePort, times(1)).saveAccount(captor.capture());
+        assertThat(captor.getValue().getIban(), CoreMatchers.equalTo(IBAN));
+        assertThat(captor.getValue().getBalance(), CoreMatchers.equalTo(BigDecimal.valueOf(19.50)));
+        assertNotNull(captor.getValue().getStatements().get(0).getDate());
+        assertThat(captor.getValue().getStatements().get(0).getOperation(), equalTo(Operation.WITHDRAW));
+        assertThat(captor.getValue().getStatements().get(0).getBalance(), equalTo(BigDecimal.valueOf(30)));
+        assertThat(captor.getValue().getStatements().get(0).getAmount(), equalTo(BigDecimal.valueOf(10.50)));
     }
 }
