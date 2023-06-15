@@ -9,4 +9,8 @@ public class Account {
 
     private String iban;
     private BigDecimal balance;
+
+    public void deposit(BigDecimal amount) {
+        balance = balance.add(amount);
+    }
 }

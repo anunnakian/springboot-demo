@@ -22,7 +22,7 @@ public class AccountService {
         }
 
         Account account = accountOptional.get();
-        account.setBalance(account.getBalance().add(amount));
+        account.deposit(amount);
 
         storagePort.saveAccount(account);
     }
