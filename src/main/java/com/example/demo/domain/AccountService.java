@@ -1,6 +1,7 @@
 package com.example.demo.domain;
 
 import com.example.demo.domain.exception.AccountNotFoundException;
+import com.example.demo.domain.exception.InsufficientFundsException;
 import com.example.demo.domain.model.Account;
 import com.example.demo.domain.model.AccountStatement;
 import com.example.demo.domain.model.Operation;
@@ -39,6 +40,11 @@ public class AccountService {
         }
 
         Account account = accountOptional.get();
+
+        if (insufficientFunds(amount, account)) {
+            throw new InsufficientFundsException();
+        }
+
         AccountStatement accountStatement = new AccountStatement();
         accountStatement.setOperation(Operation.WITHDRAW);
         accountStatement.setAmount(amount);
@@ -51,5 +57,9 @@ public class AccountService {
         storagePort.saveAccount(account);
 
         return account;
+    }
+
+    private static boolean insufficientFunds(BigDecimal amount, Account account) {
+        return amount.compareTo(account.getBalance()) > 0;
     }
 }

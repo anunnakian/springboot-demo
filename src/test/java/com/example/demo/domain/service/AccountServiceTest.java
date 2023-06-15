@@ -1,6 +1,7 @@
 package com.example.demo.domain.service;
 
 import com.example.demo.domain.AccountService;
+import com.example.demo.domain.exception.InsufficientFundsException;
 import com.example.demo.domain.model.Account;
 import com.example.demo.domain.model.Operation;
 import com.example.demo.domain.port.StoragePort;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,5 +66,17 @@ public class AccountServiceTest {
         assertThat(captor.getValue().getStatements().get(0).getOperation(), equalTo(Operation.WITHDRAW));
         assertThat(captor.getValue().getStatements().get(0).getBalance(), equalTo(BigDecimal.valueOf(30)));
         assertThat(captor.getValue().getStatements().get(0).getAmount(), equalTo(BigDecimal.valueOf(10.50)));
+    }
+
+    @Test
+    void shouldWithdrawABigAmount() {
+        Account account = new Account();
+        account.setBalance(BigDecimal.valueOf(30));
+        account.setIban(IBAN);
+        when(storagePort.findAccount(IBAN)).thenReturn(Optional.of(account));
+
+        assertThrows(InsufficientFundsException.class, () -> accountService.withdraw(IBAN, BigDecimal.valueOf(60)));
+
+        verify(storagePort, never()).saveAccount(any());
     }
 }
